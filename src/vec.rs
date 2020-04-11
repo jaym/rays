@@ -49,6 +49,10 @@ impl Vec3 {
     pub fn unit(self) -> Vec3 {
         self / self.length()
     }
+
+    pub fn dot(self, v: Vec3) -> f32 {
+        self.d.iter().zip(v.d.iter()).map(|(a, b)| a * b).sum()
+    }
 }
 
 impl ops::Add for Vec3 {
@@ -62,6 +66,14 @@ impl ops::Add for Vec3 {
                 self.d[2] + rhs.d[2],
             ],
         }
+    }
+}
+
+impl ops::Sub for Vec3 {
+    type Output = Self;
+
+    fn sub(self, rhs: Vec3) -> Self::Output {
+        self + rhs * -1.0
     }
 }
 
@@ -103,6 +115,31 @@ mod tests {
 
         let v1 = Vec3::new(3.0, 4.0, 0.0);
         assert_eq!(v1.length(), 5.0);
+    }
+
+    #[test]
+    fn test_dot() {
+        let unit_x = Vec3::new(1.0, 0.0, 0.0);
+        let unit_y = Vec3::new(0.0, 1.0, 0.0);
+        let unit_z = Vec3::new(0.0, 0.0, 1.0);
+
+        assert_eq!(unit_x.dot(unit_x), 1.0);
+        assert_eq!(unit_x.dot(unit_y), 0.0);
+        assert_eq!(unit_x.dot(unit_z), 0.0);
+
+        assert_eq!(unit_y.dot(unit_x), 0.0);
+        assert_eq!(unit_y.dot(unit_y), 1.0);
+        assert_eq!(unit_y.dot(unit_z), 0.0);
+
+        assert_eq!(unit_z.dot(unit_x), 0.0);
+        assert_eq!(unit_z.dot(unit_y), 0.0);
+        assert_eq!(unit_z.dot(unit_z), 1.0);
+
+        let v = Vec3::new(1.0, 2.0, 4.0);
+        assert_eq!(v.dot(v), 21.0);
+        assert_eq!(v.dot(unit_x), 1.0);
+        assert_eq!(v.dot(unit_y), 2.0);
+        assert_eq!(v.dot(unit_z), 4.0);
     }
 
     mod add {
