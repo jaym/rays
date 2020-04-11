@@ -10,6 +10,14 @@ impl Vec3 {
         Vec3 { d: [x, y, z] }
     }
 
+    pub fn ones() -> Vec3 {
+        Vec3::new(1.0, 1.0, 1.0)
+    }
+
+    pub fn zeros() -> Vec3 {
+        Vec3::new(0.0, 0.0, 0.0)
+    }
+
     pub fn x(self) -> f32 {
         self.d[0]
     }
@@ -20,6 +28,26 @@ impl Vec3 {
 
     pub fn z(self) -> f32 {
         self.d[2]
+    }
+
+    pub fn r(self) -> f32 {
+        self.d[0]
+    }
+
+    pub fn g(self) -> f32 {
+        self.d[1]
+    }
+
+    pub fn b(self) -> f32 {
+        self.d[2]
+    }
+
+    pub fn length(self) -> f32 {
+        self.d.iter().fold(0.0, |sum, i| sum + (i * i)).sqrt()
+    }
+
+    pub fn unit(self) -> Vec3 {
+        self / self.length()
     }
 }
 
@@ -46,9 +74,37 @@ impl ops::Mul<f32> for Vec3 {
     }
 }
 
+impl ops::Div<f32> for Vec3 {
+    type Output = Self;
+    fn div(self, rhs: f32) -> Self::Output {
+        self * (1.0 / rhs)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     pub use super::*;
+
+    #[test]
+    fn test_length() {
+        let unit_x = Vec3::new(1.0, 0.0, 0.0);
+        let unit_y = Vec3::new(0.0, 1.0, 0.0);
+        let unit_z = Vec3::new(0.0, 0.0, 1.0);
+        let zero = Vec3::new(0.0, 0.0, 0.0);
+
+        assert_eq!(zero.length(), 0.0);
+        assert_eq!(unit_x.length(), 1.0);
+        assert_eq!(unit_y.length(), 1.0);
+        assert_eq!(unit_z.length(), 1.0);
+
+        assert_eq!(unit_x.length() * 2.0, 2.0);
+        assert_eq!(unit_y.length() * 2.0, 2.0);
+        assert_eq!(unit_z.length() * 2.0, 2.0);
+
+        let v1 = Vec3::new(3.0, 4.0, 0.0);
+        assert_eq!(v1.length(), 5.0);
+    }
+
     mod add {
         use super::Vec3;
         #[test]
