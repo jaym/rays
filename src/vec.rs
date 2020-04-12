@@ -69,6 +69,16 @@ impl ops::Add for Vec3 {
     }
 }
 
+impl ops::Add<f32> for Vec3 {
+    type Output = Self;
+
+    fn add(self, rhs: f32) -> Self::Output {
+        Vec3 {
+            d: [self.d[0] + rhs, self.d[1] + rhs, self.d[2] + rhs],
+        }
+    }
+}
+
 impl ops::Sub for Vec3 {
     type Output = Self;
 
