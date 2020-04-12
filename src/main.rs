@@ -25,11 +25,12 @@ fn ray_color(r: &ray::Ray, hittables: &HittableList) -> Vec3 {
                 None => last_hit,
             }
         })
-        .map_or(Vec3::ones(), |h| (h.normal + 1.0) * 0.5)
-
-    //let direction = r.direction.unit();
-    //let t = 0.5 * (direction.y() + 1.0);
-    //Vec3::ones() * (1.0 - t) + Vec3::new(0.5, 0.7, 1.0) * t
+        .map(|h| (h.normal + 1.0) * 0.5)
+        .unwrap_or_else(|| {
+            let direction = r.direction.unit();
+            let t = 0.5 * (direction.y() + 1.0);
+            Vec3::ones() * (1.0 - t) + Vec3::new(0.5, 0.7, 1.0) * t
+        })
 
     //Vec3::zeros()
 }
@@ -73,7 +74,7 @@ fn main() -> std::io::Result<()> {
             radius: 0.25,
         }),
         Box::new(geom::Sphere {
-            center: Vec3::new(0.75, 1.0, -1.5),
+            center: Vec3::new(0.0, 0.0, -1.5),
             radius: 0.5,
         }),
     ];
