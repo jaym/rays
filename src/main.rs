@@ -1,3 +1,4 @@
+use rays::camera::{self, Camera};
 use rays::geom;
 use rays::ray;
 use rays::vec::Vec3;
@@ -29,16 +30,14 @@ fn write_ppm<W: Write>(
     hittables: &HittableList,
 ) -> std::io::Result<()> {
     write!(out, "P3\n{} {}\n255\n", nx, ny)?;
-    let lower_left_corner = Vec3::new(-2.0, -1.0, -1.0);
-    let horizontal = Vec3::new(4.0, 0.0, 0.0);
-    let vertical = Vec3::new(0.0, 2.0, 0.0);
     let origin = Vec3::new(0.0, 0.0, 0.0);
+    let cam = camera::Simple::new(origin, 4.0, 2.0, -1.0);
 
     for j in (0..ny).rev() {
         for i in 0..nx {
             let u = (i as f32) / (nx as f32);
             let v = (j as f32) / (ny as f32);
-            let r = ray::Ray::new(origin, lower_left_corner + horizontal * u + vertical * v);
+            let r = cam.get_ray(u, v);
             let c = ray_color(&r, hittables);
 
             let ir = (255.99 * c.r()) as u8;
