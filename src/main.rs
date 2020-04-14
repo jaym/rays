@@ -6,6 +6,13 @@ use std::io::{self, Write};
 
 type HittableList = Vec<Box<dyn geom::Hittable>>;
 
+fn rand(u: f32, v: f32) -> f32 {
+    let u = u + 0.39;
+    let v = v + 0.73;
+    return ((u * 1031.1031 * v * 369.11369 + v * 369.11369 * u * 1031.1031) + 19.19 / 7.33)
+        .fract();
+}
+
 fn ray_color(r: &ray::Ray, hittables: &HittableList) -> Vec3 {
     hittables
         .iter()
@@ -40,6 +47,7 @@ fn write_ppm<W: Write>(
             let r = cam.get_ray(u, v);
             let c = ray_color(&r, hittables);
 
+            let c = Vec3::new(rand(u, v), rand(u, v), rand(u, v));
             let ir = (255.99 * c.r()) as u8;
             let ig = (255.99 * c.g()) as u8;
             let ib = (255.99 * c.b()) as u8;
