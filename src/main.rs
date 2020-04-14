@@ -9,21 +9,8 @@ fn ray_color(r: &ray::Ray, hittables: &HittableList) -> Vec3 {
     hittables
         .iter()
         .fold(None, |last_hit: Option<geom::HitRecord>, hittable| {
-            let hit = hittable.hit(r);
-            match hit {
-                Some(h) => {
-                    if let Some(lh) = last_hit {
-                        if h.t < lh.t {
-                            hit
-                        } else {
-                            last_hit
-                        }
-                    } else {
-                        hit
-                    }
-                }
-                None => last_hit,
-            }
+            let t_max = last_hit.map_or(f32::INFINITY, |h| h.t);
+            hittable.hit(r, t_max).or(last_hit)
         })
         .map(|h| (h.normal + 1.0) * 0.5)
         .unwrap_or_else(|| {
@@ -70,12 +57,20 @@ fn main() -> std::io::Result<()> {
     let ny = 200;
     let objects: HittableList = vec![
         Box::new(geom::Sphere {
-            center: Vec3::new(0.0, 0.0, -1.0),
-            radius: 0.25,
-        }),
-        Box::new(geom::Sphere {
             center: Vec3::new(0.0, 0.0, -1.5),
             radius: 0.5,
+        }),
+        Box::new(geom::Sphere {
+            center: Vec3::new(0.0, 0.0, -0.5),
+            radius: 0.1,
+        }),
+        Box::new(geom::Sphere {
+            center: Vec3::new(0.0, 100.5, -1.0),
+            radius: 100.0,
+        }),
+        Box::new(geom::Sphere {
+            center: Vec3::new(0.0, -100.5, -1.0),
+            radius: 100.0,
         }),
     ];
 

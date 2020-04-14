@@ -9,7 +9,7 @@ pub struct HitRecord {
 }
 
 pub trait Hittable {
-    fn hit(&self, r: &ray::Ray) -> Option<HitRecord>;
+    fn hit(&self, r: &ray::Ray, t_max: f32) -> Option<HitRecord>;
 }
 
 pub struct Sphere {
@@ -18,7 +18,7 @@ pub struct Sphere {
 }
 
 impl Hittable for Sphere {
-    fn hit(&self, r: &ray::Ray) -> Option<HitRecord> {
+    fn hit(&self, r: &ray::Ray, t_max: f32) -> Option<HitRecord> {
         // The point P given by (x,y,z) is on a sphere with radius R
         // and center C given by (c_x, c_y, c_z)
         //   (x - c_x)^2 + (y - c_y)^2 + (z - c_z)^2 = R^2
@@ -45,7 +45,7 @@ impl Hittable for Sphere {
             None
         } else {
             let t = (-b - discrimant.sqrt()) / (2.0 * a);
-            if t > 0.0 {
+            if t > 0.0 && t < t_max {
                 let intersection = r.point_at_parameter(t);
                 let normal = (intersection - self.center).unit();
                 Some(HitRecord {
