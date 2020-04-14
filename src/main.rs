@@ -1,3 +1,4 @@
+use rand::Rng;
 use rays::camera::{self, Camera};
 use rays::geom;
 use rays::ray;
@@ -6,11 +7,8 @@ use std::io::{self, Write};
 
 type HittableList = Vec<Box<dyn geom::Hittable>>;
 
-fn rand(u: f32, v: f32) -> f32 {
-    let u = u + 0.39;
-    let v = v + 0.73;
-    return ((u * 1031.1031 * v * 369.11369 + v * 369.11369 * u * 1031.1031) + 19.19 / 7.33)
-        .fract();
+fn rand() -> (f32, f32) {
+    rand::thread_rng().gen()
 }
 
 fn ray_color(r: &ray::Ray, hittables: &HittableList) -> Vec3 {
@@ -39,15 +37,21 @@ fn write_ppm<W: Write>(
     write!(out, "P3\n{} {}\n255\n", nx, ny)?;
     let origin = Vec3::new(0.0, 0.0, 0.0);
     let cam = camera::Simple::new(origin, 4.0, 2.0, -1.0);
-
+    let samples_per_pixel = 50;
     for j in (0..ny).rev() {
         for i in 0..nx {
             let u = (i as f32) / (nx as f32);
             let v = (j as f32) / (ny as f32);
-            let r = cam.get_ray(u, v);
-            let c = ray_color(&r, hittables);
 
-            let c = Vec3::new(rand(u, v), rand(u, v), rand(u, v));
+            let mut c = Vec3::zeros();
+
+            for k in 0..samples_per_pixel {
+                let (ur, vr) = rand();
+                let r = cam.get_ray(u + ur / (nx as f32), v + vr / (ny as f32));
+                c = c + ray_color(&r, hittables);
+            }
+            c = c / (samples_per_pixel as f32);
+
             let ir = (255.99 * c.r()) as u8;
             let ig = (255.99 * c.g()) as u8;
             let ib = (255.99 * c.b()) as u8;
