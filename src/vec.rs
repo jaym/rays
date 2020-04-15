@@ -1,3 +1,4 @@
+use rand::Rng;
 use std::ops;
 
 #[derive(Debug, Copy, Clone, PartialEq)]
@@ -16,6 +17,18 @@ impl Vec3 {
 
     pub fn zeros() -> Vec3 {
         Vec3::new(0.0, 0.0, 0.0)
+    }
+
+    pub fn rand_in_unit() -> Vec3 {
+        loop {
+            let x = rand::thread_rng().gen_range(-1.0, 1.0);
+            let y = rand::thread_rng().gen_range(-1.0, 1.0);
+            let z = rand::thread_rng().gen_range(-1.0, 1.0);
+            let v = Vec3::new(x, y, z);
+            if v.length_squared() <= 1.0 {
+                return v;
+            }
+        }
     }
 
     pub fn x(self) -> f32 {
@@ -43,7 +56,11 @@ impl Vec3 {
     }
 
     pub fn length(self) -> f32 {
-        self.d.iter().fold(0.0, |sum, i| sum + (i * i)).sqrt()
+        self.length_squared().sqrt()
+    }
+
+    pub fn length_squared(self) -> f32 {
+        self.d.iter().fold(0.0, |sum, i| sum + (i * i))
     }
 
     pub fn unit(self) -> Vec3 {

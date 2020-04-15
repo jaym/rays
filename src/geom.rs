@@ -45,7 +45,7 @@ impl Hittable for Sphere {
             None
         } else {
             let t = (-b - discrimant.sqrt()) / (2.0 * a);
-            if t > 0.0 && t < t_max {
+            if t > 0.001 && t < t_max {
                 let intersection = r.point_at_parameter(t);
                 let normal = (intersection - self.center).unit();
                 Some(HitRecord {
