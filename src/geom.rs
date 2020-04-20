@@ -1,23 +1,52 @@
 use super::ray;
 use super::vec::Vec3;
 
-#[derive(Debug, Copy, Clone, PartialEq)]
-pub struct HitRecord {
+type Attenuation = Vec3;
+type ScatterRay = ray::Ray;
+pub trait Material {
+    fn scatter(
+        &self,
+        r_in: &ray::Ray,
+        intersection: &Vec3,
+        normal: &Vec3,
+    ) -> (Attenuation, ScatterRay);
+}
+
+pub struct Lambertian {
+    pub albedo: Vec3,
+}
+
+impl Material for Lambertian {
+    fn scatter(
+        &self,
+        r_in: &ray::Ray,
+        intersection: &Vec3,
+        normal: &Vec3,
+    ) -> (Attenuation, ScatterRay) {
+        let scatter_dir = *normal + Vec3::rand_unit();
+        (self.albedo, ray::Ray::new(*intersection, scatter_dir))
+    }
+}
+
+#[derive(Copy, Clone)]
+pub struct HitRecord<'a> {
     pub t: f32,
     pub intersection: Vec3,
     pub normal: Vec3,
+    pub mat: &'a dyn Material,
 }
 
 pub trait Hittable {
     fn hit(&self, r: &ray::Ray, t_max: f32) -> Option<HitRecord>;
 }
 
-pub struct Sphere {
+pub struct Sphere<M: Material> {
     pub center: Vec3,
     pub radius: f32,
+    pub mat: M,
 }
 
-impl Hittable for Sphere {
+impl<M: Material> Hittable for Sphere<M> {
     fn hit(&self, r: &ray::Ray, t_max: f32) -> Option<HitRecord> {
         // The point P given by (x,y,z) is on a sphere with radius R
         // and center C given by (c_x, c_y, c_z)
@@ -48,10 +77,12 @@ impl Hittable for Sphere {
             if t > 0.001 && t < t_max {
                 let intersection = r.point_at_parameter(t);
                 let normal = (intersection - self.center).unit();
+                let mat = &self.mat;
                 Some(HitRecord {
                     t,
                     intersection,
                     normal,
+                    mat,
                 })
             } else {
                 None
