@@ -23,7 +23,7 @@ fn ray_color(r: &ray::Ray, hittables: &HittableList, transmission: f32, depth: i
             })
             //.map(|h| (h.normal + 1.0) * 0.5)
             .map(|h| {
-                let target = h.intersection + h.normal + Vec3::rand_in_unit();
+                let target = h.intersection + h.normal + Vec3::rand_unit();
                 let next_ray = ray::Ray::new(h.intersection, target);
                 ray_color(&next_ray, hittables, 0.5 * transmission, depth - 1)
             })
@@ -57,7 +57,7 @@ fn write_ppm<W: Write>(
             for k in 0..samples_per_pixel {
                 let (ur, vr) = rand();
                 let r = cam.get_ray(u + ur / (nx as f32), v + vr / (ny as f32));
-                c = c + ray_color(&r, hittables, 1.0, 50);
+                c = c + ray_color(&r, hittables, 0.5, 50);
             }
             c = c / (samples_per_pixel as f32);
 
@@ -79,14 +79,6 @@ fn main() -> std::io::Result<()> {
         Box::new(geom::Sphere {
             center: Vec3::new(0.0, 0.0, -1.5),
             radius: 0.5,
-        }),
-        Box::new(geom::Sphere {
-            center: Vec3::new(0.4, 0.0, -1.5),
-            radius: 0.3,
-        }),
-        Box::new(geom::Sphere {
-            center: Vec3::new(0.0, 100.5, -1.0),
-            radius: 100.0,
         }),
         Box::new(geom::Sphere {
             center: Vec3::new(0.0, -100.5, -1.0),

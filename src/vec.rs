@@ -25,10 +25,18 @@ impl Vec3 {
             let y = rand::thread_rng().gen_range(-1.0, 1.0);
             let z = rand::thread_rng().gen_range(-1.0, 1.0);
             let v = Vec3::new(x, y, z);
-            if v.length_squared() <= 1.0 {
+            if v.length_squared() < 1.0 {
                 return v;
             }
         }
+    }
+
+    pub fn rand_unit() -> Vec3 {
+        let a: f32 = rand::thread_rng().gen_range(0.0, 2.0 * std::f32::consts::PI);
+        let z: f32 = rand::thread_rng().gen_range(-1.0, 1.0);
+        let r: f32 = (1.0 - z * z).sqrt();
+
+        Vec3::new(r * a.cos(), r * a.sin(), z)
     }
 
     pub fn x(self) -> f32 {
