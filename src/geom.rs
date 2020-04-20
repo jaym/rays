@@ -28,6 +28,23 @@ impl Material for Lambertian {
     }
 }
 
+pub struct Metal {
+    pub albedo: Vec3,
+}
+
+impl Material for Metal {
+    fn scatter(
+        &self,
+        r_in: &ray::Ray,
+        intersection: &Vec3,
+        normal: &Vec3,
+    ) -> (Attenuation, ScatterRay) {
+        let scatter_dir = r_in.direction.reflect(*normal) + (Vec3::rand_unit() * 0.1);
+
+        (self.albedo, ray::Ray::new(*intersection, scatter_dir))
+    }
+}
+
 #[derive(Copy, Clone)]
 pub struct HitRecord<'a> {
     pub t: f32,

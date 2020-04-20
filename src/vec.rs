@@ -78,6 +78,10 @@ impl Vec3 {
     pub fn dot(self, v: Vec3) -> f32 {
         self.d.iter().zip(v.d.iter()).map(|(a, b)| a * b).sum()
     }
+
+    pub fn reflect(self, n: Vec3) -> Vec3 {
+        self - n * self.dot(n) * 2.0
+    }
 }
 
 impl ops::Add for Vec3 {

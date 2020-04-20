@@ -45,7 +45,7 @@ fn write_ppm<W: Write>(
     write!(out, "P3\n{} {}\n255\n", nx, ny)?;
     let origin = Vec3::new(0.0, 0.0, 0.0);
     let cam = camera::Simple::new(origin, 4.0, 2.0, -1.0);
-    let samples_per_pixel = 50;
+    let samples_per_pixel = 150;
     for j in (0..ny).rev() {
         for i in 0..nx {
             let u = (i as f32) / (nx as f32);
@@ -76,17 +76,17 @@ fn main() -> std::io::Result<()> {
     let ny = 200;
     let objects: HittableList = vec![
         Box::new(geom::Sphere {
-            center: Vec3::new(0.0, 0.0, -1.5),
+            center: Vec3::new(0.0, 0.0, -1.0),
             radius: 0.5,
             mat: geom::Lambertian {
                 albedo: Vec3::new(0.8, 0.1, 0.1),
             },
         }),
         Box::new(geom::Sphere {
-            center: Vec3::new(0.7, 0.0, -1.5),
-            radius: 0.3,
-            mat: geom::Lambertian {
-                albedo: Vec3::new(1.0, 1.0, 1.0),
+            center: Vec3::new(-1.0, 0.0, -1.0),
+            radius: 0.5,
+            mat: geom::Metal {
+                albedo: Vec3::new(0.8, 0.8, 0.8),
             },
         }),
         Box::new(geom::Sphere {
